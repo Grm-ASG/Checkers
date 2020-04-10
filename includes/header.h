@@ -3,9 +3,13 @@
 
 # define ERR "Error\n"
 
+# include <stdlib.h>
+
+void			*ft_memset(void *memptr, int val, size_t num);
 void            ft_print_map(char **map);
 void            ft_checkers(char **argv);
 void			ft_putstr(char *str);
 void			ft_putchar(char c);
+int         	ft_strlen(char *str);
 
 #endif
