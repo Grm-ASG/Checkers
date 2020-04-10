@@ -1,8 +1,5 @@
 #include "header.h"
 
-/*delete*/
-#include <stdio.h>
-
 int			 ft_check_map(char **argv)
 {
 	int w;
@@ -45,114 +42,198 @@ int			 ft_check_map(char **argv)
 
 void			ft_res_copy(char **res, char *tmp, int i, int j)
 {
-    int k;
+	int k;
 
+    k = 0;
 	if (*res == 0)
 	{
-		if((*res =(char *)malloc(sizeof(char) * 3)))
-		{
 			**res = j + 'A';
 			(*(*res + 1)) = i + '0';
 			(*(*res + 2)) = 0;
-		}
-		else
-		{
-			ft_putstr("Malloc error\n");
-			exit (1);
-		}
 	}
 	else 
-    {
-        while (tmp[k])
-        {
-            (*(*res + k)) = tmp[k];
-            k++;
-        }
-    }
+	{
+		while (tmp[k])
+		{
+			(*(*res + k)) = tmp[k];
+			k++;
+		}
+	}
 }
 
 int			 ft_check_left_up(char **argv, int i, int j)
 {
-	if (j == 0 || i >= 7 || argv[i + 1][j - 1] == 'w' ||
-		argv[i + 1][j - 1] == 'W' || argv[i + 1][j - 1] == '.')
-	{
-    /*delete*
-    *   printf("ft_check_left_up     : current position is argv[%d][%d]\n", i, j);
-    */
+	if (j <= 1 || i >= 7 || argv[i + 1][j - 1] == 'w' ||
+		argv[i + 1][j - 1] == 'W' || argv[i + 1][j - 1] == '.'||
+        argv[i + 2][j - 2] != '.')
 		return (0);
-	}
+	return (1);
+}
+
+int			 ft_check_left_up_W(char argv[][9], int i, int j)
+{
+	if (j <= 1 || i >= 7 || argv[i + 1][j - 1] == 'w' ||
+		argv[i + 1][j - 1] == 'W' || argv[i + 1][j - 1] == '.'||
+        argv[i + 2][j - 2] != '.')
+		return (0);
+	return (1);
+}
+
+int			 ft_check_left_down(char argv[][9], int i, int j)
+{
+	if (j <= 1 || i <= 2 || argv[i - 1][j - 1] == 'w' ||
+		argv[i - 1][j - 1] == 'W' || argv[i - 1][j - 1] == '.' ||
+        argv[i - 2][j - 2] != '.')
+		return (0);
+	return (1);
+}
+
+int			 ft_check_right_down(char argv[][9], int i, int j)
+{
+	if (j >= 6 || i <= 2 || argv[i - 1][j + 1] == 'w' ||
+		argv[i - 1][j + 1] == 'W' || argv[i - 1][j + 1] == '.' ||
+        argv[i - 2][j + 2] != '.')
+		return (0);
 	return (1);
 }
 
 int			 ft_check_right_up(char **argv, int i, int j)
 {
-	if (j == 7 || i >= 7 || argv[i + 1][j + 1] == 'w' ||
-		argv[i + 1][j + 1] == 'W' || argv[i + 1][j + 1] == '.')
-	{
-    /*delete*
-	*   printf("ft_check_right_up    : current position is argv[%d][%d]\n", i, j);
-    */
+	if (j >= 6 || i >= 7 || argv[i + 1][j + 1] == 'w' ||
+		argv[i + 1][j + 1] == 'W' || argv[i + 1][j + 1] == '.' ||
+        argv[i + 2][j + 2] != '.')
 		return (0);
-	}
+	return (1);
+}
+
+int			 ft_check_right_up_W(char argv[][9], int i, int j)
+{
+	if (j >= 6 || i >= 7 || argv[i + 1][j + 1] == 'w' ||
+		argv[i + 1][j + 1] == 'W' || argv[i + 1][j + 1] == '.' ||
+        argv[i + 2][j + 2] != '.')
+		return (0);
 	return (1);
 }
 
 void			ft_check_branch(char **argv, int i, int j, char *tmp, char **res)
 {
-	char    temp2[256];
-    int     k;
+	char	temp2[256];
+	int     k;
 
-    ft_memset(temp2, 0, 256);
-    k = 0;
-    while (tmp[k])
+	ft_memset(temp2, 0, 256);
+	k = 0;
+	while (tmp[k])
+	{
+		temp2[k] = tmp[k];
+		k++;
+	}
+	if (k != 0)
+		temp2[k++] = '-';
+	temp2[k++] = j + 'A';
+	temp2[k++] = i + '0';
+    temp2[k] = 0;
+	if (!(ft_check_left_up(argv, i, j)) && !(ft_check_right_up(argv, i, j)))
+	{
+		if(ft_strlen(temp2) > ft_strlen(*res))
+			ft_res_copy(res, temp2, i, j);
+		return ;
+	}
+	if (ft_check_left_up(argv, i, j))
+		ft_check_branch(argv, i + 2, j - 2, temp2, res);
+	if (ft_check_right_up(argv, i, j))
+	   ft_check_branch(argv, i + 2, j + 2, temp2, res);
+}
+
+void            ft_check_branch_W(char map[][9], int i, int j, char *tmp, char **res)
+{
+    char    tmp_map[10][9];
+	char	temp2[256];
+	int     k;
+    int     l;
+
+    tmp_map[0][0] = 0;
+    tmp_map[9][0] = 0;
+    k = 1;
+    while (k < 9)
     {
-        temp2[k] = tmp[k];
+        l = 0;
+        while(l < 8)
+        {
+            tmp_map[k][l] = map[k][l];
+            l++;
+        }
         k++;
     }
-    if (k != 0)
-        temp2[k++] = '-';
-    temp2[k++] = j + 'A';
-    temp2[k] = i + '0';
-    /*delete
-	*   printf("ft_check_branch      : i = %d | j = %d\n", i, j);
-    *   printf("RES from i j             = %c%c\n", j + 'A', i + '0');
-    *   printf("RES from tmp             = %s\n\n", temp2);
-    *   printf("Result                   = %s\n\n", *res);
-    */
-    if (!(ft_check_left_up(argv, i, j)) && !(ft_check_right_up(argv, i, j)))
+	ft_memset(temp2, 0, 256);
+	k = 0;
+	while (tmp[k])
+	{
+		temp2[k] = tmp[k];
+		k++;
+	}
+	if (k != 0)
+		temp2[k++] = '-';
+	temp2[k++] = j + 'A';
+	temp2[k++] = i + '0';
+	temp2[k] = 0;
+	if (!(ft_check_left_up_W(map, i, j)) && !(ft_check_right_up_W(map, i, j)) && 
+        !(ft_check_left_down(map, i, j)) && !(ft_check_right_down(map, i, j)))
+	{
+		if(ft_strlen(temp2) > ft_strlen(*res))
+			ft_res_copy(res, temp2, i, j);
+		return ;
+	}
+    else
     {
-        if(ft_strlen(temp2) > ft_strlen(*res))
-            ft_res_copy(res, temp2, i, j);
-        return ;
+        tmp_map[i][j] = '.';
+        if (ft_check_left_down(map, i, j))
+        {
+            tmp_map[i - 1][j - 1] = '.';
+            ft_check_branch_W(tmp_map, i - 2, j - 2, temp2, res); 
+        }
+        if (ft_check_left_up_W(map, i, j))
+        {
+            tmp_map[i + 1][j - 1] = '.';
+            ft_check_branch_W(tmp_map, i + 2, j - 2, temp2, res);
+        }
+        if (ft_check_right_down(map, i, j))
+        {
+            tmp_map[i - 1][j + 1] = '.';
+            ft_check_branch_W(tmp_map, i - 2, j + 2, temp2, res); 
+        }
+        if (ft_check_right_up_W(map, i, j))
+        {
+            tmp_map[i + 1][j + 1] = '.';
+            ft_check_branch_W(tmp_map, i + 2, j + 2, temp2, res);
+        }
     }
-    if (ft_check_left_up(argv, i, j))
-        ft_check_branch(argv, i + 2, j - 2, temp2, res);
-    if (ft_check_right_up(argv, i, j))
-	   ft_check_branch(argv, i + 2, j + 2, temp2, res);
 }
 
 void			ft_check_var(char **argv, int i, int j, char **res)
 {
 	char	tmp[256];
-    //char    **map;
+    char    tmp_map[10][9];
+	int     k;
+    int     l;
 
-    ft_memset(tmp, 0, 256);
-    /*delete
-     *  printf("Res = %s\n", tmp);
-     */
+    tmp_map[0][0] = 0;
+    tmp_map[9][0] = 0;
+    k = 1;
+	ft_memset(tmp, 0, 256);
+    while (k < 9)
+    {
+        l = 0;
+        while(l < 8)
+        {
+            tmp_map[k][l] = argv[k][l];
+            l++;
+        }
+        k++;
+    }
 	if (argv[i][j] == 'w')
-	{
 	   ft_check_branch(argv, i, j, tmp, res);
-	}
 	else if(argv[i][j] == 'W')
-	{
-      //  map = ft_copy_map(argv);
-//        ft_check_branch_W(map);
-        // free(map);
-	}
-    /*delete
-     *printf("ft_check_var            : Res = %s\n\n", *res);
-     */
+		ft_check_branch_W(tmp_map, i, j, tmp, res);
 	if ((*res) == 0)
 		ft_res_copy(res, tmp, i, j);
 }
@@ -160,27 +241,26 @@ void			ft_check_var(char **argv, int i, int j, char **res)
 void			ft_solve_checkers(char **argv)
 {
 	char	*res;
-	int     i;
-	int     j;
+	int	 i;
+	int	 j;
 
 	i = 1;
 	res = (char *)malloc(sizeof(char) * 256);
-    res = ft_memset(res, 0, 256);
+	res = ft_memset(res, 0, 256);
 	while (argv[i])
 	{
 		j = 0;
 		while (argv[i][j])
 		{
 			if (argv[i][j] == 'w' || argv[i][j] == 'W')
-			{
 				ft_check_var(argv, i, j, &res);
-			}
 			j++;
 		}
 		i++;
 	}
 	ft_putstr(res);
 	ft_putchar('\n');
+	free(res);
 }
 
 void			ft_checkers(char **argv)
@@ -190,6 +270,5 @@ void			ft_checkers(char **argv)
 	else
 	{
 		ft_solve_checkers(argv);
-	//	ft_print_map(argv);
 	}
 }
