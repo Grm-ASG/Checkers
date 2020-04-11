@@ -185,26 +185,31 @@ void            ft_check_branch_W(char map[][9], int i, int j, char *tmp, char *
 	}
     else
     {
+
         tmp_map[i][j] = '.';
         if (ft_check_left_down(map, i, j))
         {
             tmp_map[i - 1][j - 1] = '.';
             ft_check_branch_W(tmp_map, i - 2, j - 2, temp2, res); 
+            tmp_map[i - 1][j - 1] = 'b';
         }
         if (ft_check_left_up_W(map, i, j))
         {
             tmp_map[i + 1][j - 1] = '.';
             ft_check_branch_W(tmp_map, i + 2, j - 2, temp2, res);
+            tmp_map[i + 1][j - 1] = 'b';
         }
         if (ft_check_right_down(map, i, j))
         {
             tmp_map[i - 1][j + 1] = '.';
             ft_check_branch_W(tmp_map, i - 2, j + 2, temp2, res); 
+            tmp_map[i - 1][j + 1] = 'b';
         }
         if (ft_check_right_up_W(map, i, j))
         {
             tmp_map[i + 1][j + 1] = '.';
             ft_check_branch_W(tmp_map, i + 2, j + 2, temp2, res);
+            tmp_map[i + 1][j + 1] = 'b';
         }
     }
 }
